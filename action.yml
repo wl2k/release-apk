@@ -1,5 +1,5 @@
-name: "Build Signed APK"
-description: "Build a signed APK of your Android application"
+name: Release APK
+description: Build a signed release APK of your Android application
 
 branding:
   icon: cpu
@@ -7,46 +7,43 @@ branding:
 
 inputs:
   keystore:
-    description: "The contents of the keystore file, encoded as base64"
-    required: false
-
-  keystore_password:
-    description: "Keystore file password"
+    description: The keystore file in base64 encoded format
     required: true
 
-  key_alias:
-    description: "Key alias"
+  keystore-password:
+    description: The password of the keystore file
     required: true
 
-  key_password:
-    description: "Key password"
+  key-alias:
+    description: The key alias
     required: true
 
-  java_version:
-    description: "Java version to build the project with"
-    required: false
+  key-password:
+    description: The password for the key
+    required: true
+
+  java-version:
+    description: The Java version to set up
+    # https://developer.android.com/build/releases/gradle-plugin?hl=en#compatibility
     default: "17"
 
 runs:
-  using: "composite"
+  using: composite
   steps:
-    # - name: Setup Java
-    #   uses: actions/setup-java@v4
-    #   with:
-    #     distribution: temurin
-    #     java-version: ${{ inputs.java_version }}
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: ${{ inputs.java_version }}
 
-    - name: Write keystore file from content
-      if: inputs.keystore
-      shell: bash
-      run: echo "${{ inputs.keystore }}" | base64 -d > "$GITHUB_WORKSPACE/.jks"
+    - name: Decode keystore
+      run: echo '${{ inputs.keystore }}' | base64 -d >'${{ runner.temp }}/.jks'
 
-    - name: Build APK
-      shell: bash
+    - name: Release APK
       run: |
         chmod +x ./gradlew
         ./gradlew assembleRelease \
-          -Pandroid.injected.signing.store.file="$GITHUB_WORKSPACE/.jks" \
-          -Pandroid.injected.signing.store.password="${{ inputs.keystore_password }}" \
-          -Pandroid.injected.signing.key.alias="${{ inputs.key_alias }}" \
-          -Pandroid.injected.signing.key.password="${{ inputs.key_password }}"
+          -Pandroid.injected.signing.store.file='${{ runner.temp }}/.jks' \
+          -Pandroid.injected.signing.store.password='${{ inputs.keystore_password }}' \
+          -Pandroid.injected.signing.key.alias='${{ inputs.key_alias }}' \
+          -Pandroid.injected.signing.key.password='${{ inputs.key_password }}'
