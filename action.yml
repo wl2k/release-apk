@@ -37,9 +37,16 @@ runs:
         java-version: ${{ inputs.java_version }}
 
     - name: Decode keystore
-      run: echo '${{ inputs.keystore }}' | base64 -d >'${{ runner.temp }}/.jks'
+      shell: node {0}
+      run: |
+        require('fs').writeFileSync(
+          '${{ runner.temp }}/.jks',
+          '${{ inputs.keystore }}',
+          'base64'
+        );
 
     - name: Release APK
+      shell: sh
       run: |
         chmod +x ./gradlew
         ./gradlew assembleRelease \
