@@ -1,9 +1,8 @@
-# Build signed APK
+# APK release
 
-Build a signed APK of your Android application
+Build a signed, release-ready APK.
 
-> **Warning**  
-> This action only works on Ubuntu
+> Based on [victorbnl/build-signed-apk](https://github.com/victorbnl/build-signed-apk)
 
 ## Inputs
 
