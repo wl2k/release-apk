@@ -9,15 +9,12 @@ inputs:
   keystore:
     description: The keystore file in base64 encoded format
     required: true
-
   keystore-password:
     description: The password of the keystore file
     required: true
-
   key-alias:
     description: The key alias
     required: true
-
   key-password:
     description: The password for the key
     required: true
@@ -27,28 +24,34 @@ inputs:
     # https://developer.android.com/build/releases/gradle-plugin?hl=en#compatibility
     default: "17"
 
+  gradle-args:
+    description: Arguments passed to Gradle
+    default: "--no-daemon"
+
 runs:
   using: composite
   steps:
-    - name: Setup Java
-      uses: actions/setup-java@v4
+    - uses: actions/setup-java@v4
       with:
         distribution: temurin
         java-version: ${{ inputs.java-version }}
 
     - shell: node {0}
       run: |
+        //Decode the keystore
         require('fs').writeFileSync(
           '${{ runner.temp }}/.jks',
           '${{ inputs.keystore }}',
           'base64'
         );
 
-    - name: Release APK
-      shell: sh
+    - shell: sh
       run: |
+        #Release APK
         chmod +x ./gradlew
-        ./gradlew assembleRelease --no-daemon \
+
+        ./gradlew assembleRelease \
+          ${{ inputs.gradle-args }} \
           -Pandroid.injected.signing.store.file='${{ runner.temp }}/.jks' \
           -Pandroid.injected.signing.store.password='${{ inputs.keystore-password }}' \
           -Pandroid.injected.signing.key.alias='${{ inputs.key-alias }}' \
