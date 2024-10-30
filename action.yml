@@ -19,13 +19,13 @@ inputs:
     description: The password for the key
     required: true
 
+  # https://developer.android.com/build/releases/gradle-plugin?hl=en#compatibility
   java-version:
     description: The Java version to set up
-    # https://developer.android.com/build/releases/gradle-plugin?hl=en#compatibility
     default: "17"
 
   gradle-args:
-    description: Arguments passed to Gradle
+    description: The arguments passed to Gradle
     default: "--no-daemon"
 
 runs:
@@ -35,10 +35,11 @@ runs:
       with:
         distribution: temurin
         java-version: ${{ inputs.java-version }}
+        cache: gradle
 
     - shell: node {0}
       run: |
-        //Decode the keystore
+        //Decode keystore
         require('fs').writeFileSync(
           '${{ runner.temp }}/.jks',
           '${{ inputs.keystore }}',
@@ -50,9 +51,10 @@ runs:
         #Release APK
         chmod +x ./gradlew
 
-        ./gradlew assembleRelease \
-          ${{ inputs.gradle-args }} \
+        ./gradlew assembleRelease $GRADLE_ARGS \
           -Pandroid.injected.signing.store.file='${{ runner.temp }}/.jks' \
           -Pandroid.injected.signing.store.password='${{ inputs.keystore-password }}' \
           -Pandroid.injected.signing.key.alias='${{ inputs.key-alias }}' \
           -Pandroid.injected.signing.key.password='${{ inputs.key-password }}'
+      env:
+        GRADLE_ARGS: ${{ inputs.gradle-args }}
