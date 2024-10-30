@@ -3,16 +3,14 @@ plugins {
 }
 
 android {
-    namespace = "com.victorbnl.test"
-    compileSdk = 32
+    namespace = "com.test"
+    compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.victorbnl.test"
-        minSdk = 21
-        targetSdk = 32
+        applicationId = "com.test"
+        minSdk = 1
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
-
-        extra.set("enableCrashlytics", false)
     }
 }
