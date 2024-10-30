@@ -25,6 +25,7 @@ inputs:
   java_version:
     description: "Java version to build the project with"
     required: false
+    default: "17"
 
 runs:
   using: "composite"
