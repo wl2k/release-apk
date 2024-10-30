@@ -1,4 +1,4 @@
-name: ReleaseAPK
+name: APK release
 description: Build a signed, release-ready APK.
 
 branding:
