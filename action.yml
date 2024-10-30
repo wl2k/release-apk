@@ -36,8 +36,7 @@ runs:
         distribution: temurin
         java-version: ${{ inputs.java-version }}
 
-    - name: Decode keystore
-      shell: node {0}
+    - shell: node {0}
       run: |
         require('fs').writeFileSync(
           '${{ runner.temp }}/.jks',
@@ -49,7 +48,7 @@ runs:
       shell: sh
       run: |
         chmod +x ./gradlew
-        ./gradlew assembleRelease \
+        ./gradlew assembleRelease --no-daemon \
           -Pandroid.injected.signing.store.file='${{ runner.temp }}/.jks' \
           -Pandroid.injected.signing.store.password='${{ inputs.keystore-password }}' \
           -Pandroid.injected.signing.key.alias='${{ inputs.key-alias }}' \
